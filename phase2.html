@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Phase 2 — คู่มือระบบ Login และ Program</title>
+  <style>body{font-family:system-ui, -apple-system, 'Sarabun', Arial;max-width:900px;margin:28px auto;padding:18px;color:#0f172a}h1{font-size:20px}pre{background:#f6f8fb;padding:12px;border-radius:6px;overflow:auto}</style>
+</head>
+<body>
+  <h1>Phase 2 — คู่มือการติดตั้งและใช้งานระบบ Login และการจัดการ Program (ละเอียด)</h1>
+  <p>คู่มือนี้ให้คำสั่งทีละบรรทัดเพื่อทำให้ระบบ login และการจัดการโปรแกรม (single record) ทำงาน และรวมคำสั่งสำหรับตรวจสอบ/แก้ปัญหา</p>
+
+  <h2>ก่อนเริ่ม</h2>
+  <p>ตรวจสอบ PHP และ Composer:</p>
+  <pre>php -v
+composer -V</pre>
+
+  <h2>คำสั่งการตั้งค่า (คัดลอก-วางได้เลย)</h2>
+  <pre>cd /Users/naruapon/Desktop/medium/pr-senpru
+composer install --no-interaction --prefer-dist
+touch database/database.sqlite
+# ตรวจสอบ/แก้ .env หากต้องการใช้ sqlite (optional)
+php artisan migrate --force
+php artisan db:seed --class=AdminUserSeeder
+php artisan db:seed --class=ProgramSeeder
+php artisan serve --host=127.0.0.1 --port=8000
+# เปิด http://127.0.0.1:8000</pre>
+
+  <h2>ตรวจสอบว่าระบบมี route ที่ต้องการ</h2>
+  <pre>php artisan route:list --no-ansi --sort=uri | grep program
+php artisan route:list --no-ansi | grep login</pre>
+
+  <h2>การทดลองใช้งาน (ผ่าน browser)</h2>
+  <ol>
+    <li>เปิด <code>http://127.0.0.1:8000/login</code></li>
+    <li>ล็อกอินด้วย: <strong>admin@example.com</strong> / <strong>secret</strong></li>
+    <li>คุณจะถูกพาไปที่ <code>/program</code> เพื่อแก้ไขข้อมูล</li>
+    <li>บันทึกแล้วกลับไปหน้าแรกจะเห็นข้อมูลอัปเดตและเวลาที่แก้ไข</li>
+  </ol>
+
+  <h2>คำสั่งตรวจสอบเพิ่มเติม</h2>
+  <pre># ดูว่ามีข้อมูล admin ถูกสร้างหรือไม่
+sqlite3 database/database.sqlite "SELECT user_id, name, email FROM users LIMIT 5;"
+
+# ดูข้อมูล program
+sqlite3 database/database.sqlite "SELECT program_id, program_name_th, updated_at FROM programs;"
+
+# ตรวจสอบสถานะการ migrate
+php artisan migrate:status
+
+# ถ้าต้องการล้างโปรแกรมและ reseed
+sqlite3 database/database.sqlite "DELETE FROM programs;"
+php artisan db:seed --class=ProgramSeeder
+sqlite3 database/database.sqlite "SELECT program_id, program_name_th FROM programs;"
+</pre>
+
+  <h2>การแก้ปัญหาทั่วไป</h2>
+  <ul>
+    <li><strong>RouteNotFoundException</strong>: ค้นหาและแก้ชื่อ route เก่า (`programs.update`, `programs.destroy`, ฯลฯ)
+      <pre>grep -R "programs\." -n || true</pre>
+      เปลี่ยนไปใช้ `program.update` / `program.edit` ตามที่กำหนดใน `routes/web.php`.</li>
+    <li><strong>artisan บอกหา vendor/autoload.php ไม่เจอ</strong>:
+      <pre>composer install --no-interaction --prefer-dist</pre>
+    </li>
+  </ul>
+
+  <h2>คำสั่งสรุป (copy-paste)</h2>
+  <pre>cd /Users/naruapon/Desktop/medium/pr-senpru
+composer install --no-interaction --prefer-dist
+touch database/database.sqlite
+php artisan migrate --force
+php artisan db:seed --class=AdminUserSeeder
+php artisan db:seed --class=ProgramSeeder
+php artisan serve --host=127.0.0.1 --port=8000
+</pre>
+
+  <h2>เพิ่มเติม — ตัวอย่าง .env</h2>
+  <pre>APP_NAME=PR-SENPRU
+APP_ENV=local
+APP_KEY=base64:YOUR_APP_KEY_HERE
+APP_DEBUG=true
+APP_URL=http://127.0.0.1:8000
+
+DB_CONNECTION=sqlite
+# DB_DATABASE=/absolute/path/to/database/database.sqlite</pre>
+
+  <h2>เพิ่มเติม — โครงสร้างตาราง `programs` (ตัวอย่าง)</h2>
+  <pre>Schema::create('programs', function (Blueprint $table) {
+    $table->bigIncrements('program_id');
+    $table->string('program_name_th');
+    $table->string('program_name_en')->nullable();
+    $table->string('degree_th')->nullable();
+    $table->string('degree_en')->nullable();
+    $table->integer('credits_required')->nullable();
+    $table->string('language_th')->nullable();
+    $table->text('tuition_fee')->nullable();
+    $table->string('curriculum_year')->nullable();
+    $table->timestamps();
+});</pre>
+
+  <h2>เพิ่มเติม — ตัวอย่าง seeder (ProgramSeeder)</h2>
+  <pre>use Illuminate\Database\Seeder;
+use App\Models\Program;
+
+class ProgramSeeder extends Seeder
+{
+    public function run()
+    {
+        Program::create([
+            'program_name_th' => 'วิศวกรรมซอฟต์แวร์',
+            'program_name_en' => 'Software Engineering',
+            'degree_th' => 'หลักสูตรวิศวกรรมศาสตร์ (บ.Eng.)',
+            'credits_required' => 130,
+            'language_th' => 'ไทย',
+            'tuition_fee' => 'ตามประกาศ',
+            'curriculum_year' => '2565',
+        ]);
+    }
+}</pre>
+
+  <h2>เพิ่มเติม — คำสั่ง debug / cache clear</h2>
+  <pre>tail -n 200 storage/logs/laravel.log
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+php artisan config:cache</pre>
+
+  <h2>เพิ่มเติม — ตัวอย่าง route เพื่อ serve `phase2.html`</h2>
+  <pre>Route::get('/phase2', function(){
+    return response()->file(base_path('phase2.html'));
+});</pre>
+
+  <h2>แนะนำการปรับปรุงต่อ</h2>
+  <ul>
+    <li>เพิ่มคอลัมน์ `updated_by` และเก็บ `Auth::id()` ใน `ProgramController::update()`</li>
+    <li>เพิ่ม role-based authorization หากมีหลายบทบาท</li>
+    <li>เพิ่ม unit หรือ feature tests เพื่อทดสอบ login และ edit flows</li>
+  </ul>
+
+  <p>จบคู่มือ — หากต้องการให้ผมเพิ่ม route `/phase2` เพื่อแสดงไฟล์ `phase2.html` หรือแปลงเป็น Blade ให้เรียกใช้ผ่านแอพ แจ้งได้เลย</p>
+</body>
+</html>

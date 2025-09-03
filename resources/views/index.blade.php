@@ -30,15 +30,21 @@
         }
 
         .hero-section::before {
-            content: '';
+            /* show a computer icon inside a rounded badge */
+            content: '💻';
             position: absolute;
-            top: 0;
-            right: 0;
-            width: 200px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            margin: 40px;
+            top: 24px;
+            right: 24px;
+            width: 96px;
+            height: 96px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: rgba(255,255,255,0.95);
+            box-shadow: 0 8px 20px rgba(15,23,42,0.12);
         }
 
         .hero-title {
@@ -143,7 +149,14 @@
                     <span>ระบบประชาสัมพันธ์หลักสูตรวิศวกรรมซอฟต์แวร์</span>
                 </div>
                 <div class="col-md-4 text-end">
-                    <span>หน้าแรก</span>
+                    @auth
+                        <form method="POST" action="{{ route('logout') }}" style="display:inline">
+                            @csrf
+                            <button class="auth-btn secondary" type="submit">Logout</button>
+                        </form>
+                    @else
+                        <a class="auth-btn" href="{{ route('login') }}">Login</a>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -153,12 +166,20 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8">
-                    <h1 class="hero-title">{{ $program->program_name_th }}</h1>
-                    <h2 class="hero-subtitle">{{ $program->program_name_en }}</h2>
+                    <h1 class="hero-title">{{ $program->program_name_th ?? 'ยังไม่ได้ตั้งค่าหลักสูตร' }}</h1>
+                    <h2 class="hero-subtitle">{{ $program->program_name_en ?? '' }}</h2>
                     <p class="hero-description">
                         หลักสูตรวิศวกรรมซอฟต์แวร์ สาขาวิชาวิศวกรรมซอฟต์แวร์
                     </p>
-                    <button class="btn btn-guide">คู่มือหลักสูตร</button>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap">
+                        <button class="btn btn-guide">คู่มือหลักสูตร</button>
+                        @auth
+                            <a href="{{ route('program.edit') }}" class="btn btn-guide" style="background:rgba(255,255,255,0.12);color:#fff">แก้ไขหลักสูตร</a>
+                        @endauth
+                    </div>
+                    @if(isset($updatedAt))
+                        <div style="margin-top:12px;color:rgba(255,255,255,0.9)">อัปเดตล่าสุด: {{ $updatedAt->format('Y-m-d H:i') }}</div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -175,17 +196,17 @@
 
                         <div class="info-item">
                             <span class="info-label">ชื่อปริญญา (ไทย):</span>
-                            <span class="info-value">{{ $program->degree_th }}</span>
+                            <span class="info-value">{{ $program->degree_th ?? '-' }}</span>
                         </div>
 
                         <div class="info-item">
                             <span class="info-label">ชื่อปริญญา (อังกฤษ):</span>
-                            <span class="info-value">{{ $program->degree_en }}</span>
+                            <span class="info-value">{{ $program->degree_en ?? '-' }}</span>
                         </div>
 
                         <div class="info-item">
                             <span class="info-label">จำนวนหน่วยกิตที่ต้องเรียน:</span>
-                            <span class="info-value">{{ $program->credits_required }}</span>
+                            <span class="info-value">{{ $program->credits_required ?? '-' }}</span>
                         </div>
                     </div>
                 </div>
@@ -196,17 +217,17 @@
 
                         <div class="info-item">
                             <span class="info-label">ภาษาที่ใช้ในการสอน:</span>
-                            <span class="info-value">{{ $program->language_th }}</span>
+                            <span class="info-value">{{ $program->language_th ?? '-' }}</span>
                         </div>
 
                         <div class="info-item">
                             <span class="info-label">ค่าลงทะเบียนต่อปี:</span>
-                            <span class="info-value">{{ $program->tuition_fee }} บาท</span>
+                            <span class="info-value">{{ $program->tuition_fee ? $program->tuition_fee . ' บาท' : '-' }}</span>
                         </div>
 
                         <div class="info-item">
                             <span class="info-label">หลักสูตรปี:</span>
-                            <span class="info-value">{{ $program->curriculum_year }}</span>
+                            <span class="info-value">{{ $program->curriculum_year ?? '-' }}</span>
                         </div>
                     </div>
                 </div>

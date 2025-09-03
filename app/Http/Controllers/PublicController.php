@@ -9,9 +9,10 @@ class PublicController extends Controller
 {
     public function index()
     {
-        $program = Program::first();
+    $program = Program::first();
+    $updatedAt = $program?->updated_at;
 
-        return view('index', compact('program'));
+    return view('index', compact('program', 'updatedAt'));
         //return view('index');
     }
 }
