@@ -7,7 +7,7 @@ use App\Models\Program;
 
 class ProgramController extends Controller
 {
-    /** Show edit form for the single program (create if none exists) */
+    /** Show view for the single program (read-only) */
     public function edit()
     {
         $program = Program::first();
@@ -15,31 +15,16 @@ class ProgramController extends Controller
             $program = new Program();
         }
 
-        return view('programs.edit', compact('program'));
+        return view('programs.show', compact('program'));
     }
 
-    /** Create or update the single program */
+    /**
+     * Update method that redirects to homepage
+     * This prevents unauthorized updates since we removed authentication
+     */
     public function update(Request $request)
     {
-        $data = $request->validate([
-            'program_name_th' => ['required','string','max:255'],
-            'program_name_en' => ['nullable','string','max:255'],
-            'degree_th' => ['nullable','string','max:255'],
-            'degree_en' => ['nullable','string','max:255'],
-            'credits_required' => ['nullable','integer','min:0'],
-            'language_th' => ['nullable','string','max:255'],
-            'tuition_fee' => ['nullable','string','max:255'],
-            'curriculum_year' => ['nullable','string','max:50'],
-        ]);
-
-        $program = Program::first();
-        if (! $program) {
-            $program = Program::create($data);
-        } else {
-            $program->update($data);
-        }
-
-        // update timestamp already handled by Eloquent
-        return redirect()->route('program.edit')->with('success', 'Program saved');
+        // Redirect to home page since updates are not allowed for public users
+        return redirect()->route('home')->with('error', 'การอัปเดตข้อมูลต้องได้รับอนุญาตจากผู้ดูแลระบบ');
     }
 }

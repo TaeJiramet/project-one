@@ -45,18 +45,7 @@
         <header>
             <h1><a href="/" style="color:inherit;text-decoration:none">PR-SENPRU</a></h1>
             <nav>
-                @auth
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
-                        @csrf
-                        <button class="auth-btn secondary" type="submit">Logout</button>
-                    </form>
-                @else
-                    @if(Request::is('login'))
-                        <a href="{{ url('/') }}" class="auth-btn">Back</a>
-                    @else
-                        <a href="{{ route('login') }}" class="auth-btn">Login</a>
-                    @endif
-                @endauth
+                <a href="{{ url('/') }}" class="auth-btn">กลับหน้าหลัก</a>
             </nav>
         </header>
 
