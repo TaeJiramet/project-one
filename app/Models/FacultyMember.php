@@ -9,6 +9,7 @@ class FacultyMember extends Model
 {
     use HasFactory;
     
+    // Using 'faculty_id' as the primary key as defined in the migration
     protected $primaryKey = 'faculty_id';
     
     protected $fillable = [
@@ -27,5 +28,13 @@ class FacultyMember extends Model
     public function program()
     {
         return $this->belongsTo(Program::class, 'program_id');
+    }
+    
+    /**
+     * Get the route key for binding.
+     */
+    public function getRouteKeyName()
+    {
+        return 'faculty_id';
     }
 }

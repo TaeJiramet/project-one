@@ -18,7 +18,7 @@ class ProgramController extends Controller
         return view('programs.show', compact('program'));
     }
 
-    /**
+    /** 
      * Update method that redirects to homepage
      * This prevents unauthorized updates since we removed authentication
      */

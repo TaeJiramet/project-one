@@ -9,6 +9,7 @@ class Laboratory extends Model
 {
     use HasFactory;
     
+    // Using 'lab_id' as the primary key as defined in the migration
     protected $primaryKey = 'lab_id';
     
     protected $fillable = [
@@ -23,5 +24,13 @@ class Laboratory extends Model
     public function program()
     {
         return $this->belongsTo(Program::class, 'program_id');
+    }
+    
+    /**
+     * Get the route key for binding.
+     */
+    public function getRouteKeyName()
+    {
+        return 'lab_id';
     }
 }

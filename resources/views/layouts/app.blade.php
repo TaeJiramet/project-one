@@ -46,12 +46,39 @@
             <h1><a href="/" style="color:inherit;text-decoration:none">PR-SENPRU</a></h1>
             <nav>
                 <a href="{{ url('/') }}" class="auth-btn">กลับหน้าหลัก</a>
+                @auth
+                    <a href="{{ route('admin.dashboard') }}" class="auth-btn">Dashboard</a>
+                    <form id="admin-logout-form" method="POST" action="{{ route('logout') }}" style="display: inline;">
+                        @csrf
+                    </form>
+                    <a href="#" class="auth-btn" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">Logout</a>
+                @endauth
             </nav>
         </header>
 
         <main>
-            @if(session('success'))
-                <div style="padding:10px;background:#ecfdf5;color:#065f46;border-radius:6px;margin-bottom:12px">{{ session('success') }}</div>
+            @if(session('success') || request()->query('logout'))
+                <div style="padding:10px;background:#ecfdf5;color:#065f46;border-radius:6px;margin-bottom:12px">
+                    @if(session('success'))
+                        {{ session('success') }}
+                    @elseif(request()->query('logout'))
+                        ออกจากระบบเรียบร้อยแล้ว
+                    @endif
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div style="padding:10px;background:#fef2f2;color:#991b1b;border-radius:6px;margin-bottom:12px">{{ session('error') }}</div>
+            @endif
+
+            @if($errors->any())
+                <div style="padding:10px;background:#fef2f2;color:#991b1b;border-radius:6px;margin-bottom:12px">
+                    <ul class="mb-0" style="margin:0; padding-left:20px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
             @endif
 
             @yield('content')

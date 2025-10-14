@@ -9,6 +9,7 @@ class Activity extends Model
 {
     use HasFactory;
     
+    // Using 'activity_id' as the primary key as defined in the migration
     protected $primaryKey = 'activity_id';
     
     protected $fillable = [
@@ -22,5 +23,13 @@ class Activity extends Model
     public function program()
     {
         return $this->belongsTo(Program::class, 'program_id');
+    }
+    
+    /**
+     * Get the route key for binding.
+     */
+    public function getRouteKeyName()
+    {
+        return 'activity_id';
     }
 }

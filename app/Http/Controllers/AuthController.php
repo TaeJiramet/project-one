@@ -23,10 +23,10 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/program');
+            return redirect()->intended(route('admin.dashboard'))->with('success', 'เข้าสู่ระบบเรียบร้อยแล้ว');
         }
 
-        return back()->withErrors(['email' => 'Credentials not match'])->withInput();
+        return back()->withErrors(['email' => 'ข้อมูลการเข้าสู่ระบบไม่ถูกต้อง'])->withInput();
     }
 
     public function logout(Request $request)
@@ -34,6 +34,10 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        
+        // Regenerate the session token again to prevent session fixation
+        $request->session()->regenerateToken();
+        
+        return redirect()->to(route('home') . '?logout=1');
     }
 }

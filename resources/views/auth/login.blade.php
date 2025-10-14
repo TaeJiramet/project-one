@@ -3,7 +3,13 @@
 @section('content')
     <h2>Login</h2>
     @if($errors->any())
-        <div style="color:#b91c1c">{{ $errors->first() }}</div>
+        <div style="padding:10px;background:#fef2f2;color:#991b1b;border-radius:6px;margin-bottom:12px">
+            <ul class="mb-0" style="margin:0; padding-left:20px;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
     @endif
     <form method="POST" action="{{ route('login.attempt') }}">
         @csrf

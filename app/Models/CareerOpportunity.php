@@ -9,6 +9,7 @@ class CareerOpportunity extends Model
 {
     use HasFactory;
     
+    // Using 'opportunity_id' as the primary key as defined in the migration
     protected $primaryKey = 'opportunity_id';
     
     protected $fillable = [
@@ -22,5 +23,13 @@ class CareerOpportunity extends Model
     public function program()
     {
         return $this->belongsTo(Program::class, 'program_id');
+    }
+    
+    /**
+     * Get the route key for binding.
+     */
+    public function getRouteKeyName()
+    {
+        return 'opportunity_id';
     }
 }
