@@ -37,10 +37,29 @@ class StudentWorkController extends Controller
             'title_en' => 'nullable|string|max:255',
             'description_th' => 'nullable|string',
             'description_en' => 'nullable|string',
-            'image_path' => 'nullable|url',
+            'image_path' => 'nullable|url|exclude_if:file_path,""',
+            'file_path' => 'nullable|file|max:10240', // Max 10MB
         ]);
 
-        StudentWork::create($request->all());
+        // Ensure only one image field is used
+        if ($request->filled('image_path') && $request->hasFile('file_path')) {
+            return redirect()->back()->withErrors(['error' => 'กรุณาใช้เพียงวิธีเดียวในการเพิ่มรูปภาพ (ลิงก์ หรือ แนบไฟล์)'])->withInput();
+        }
+
+        $data = $request->except('file_path');
+
+        // Handle file upload if present
+        if ($request->hasFile('file_path')) {
+            $file = $request->file('file_path');
+            $path = $file->store('student-works/images', 'public');
+            $data['file_path'] = $path;
+            // Clear image_path if file is uploaded
+            if (isset($data['image_path'])) {
+                unset($data['image_path']);
+            }
+        }
+
+        StudentWork::create($data);
 
         return redirect()->route('admin.student-works.index')->with('success', 'เพิ่มผลงานนักศึกษาเรียบร้อยแล้ว');
     }
@@ -73,10 +92,34 @@ class StudentWorkController extends Controller
             'title_en' => 'nullable|string|max:255',
             'description_th' => 'nullable|string',
             'description_en' => 'nullable|string',
-            'image_path' => 'nullable|url',
+            'image_path' => 'nullable|url|exclude_if:file_path,""',
+            'file_path' => 'nullable|file|max:10240', // Max 10MB
         ]);
 
-        $student_work->update($request->all());
+        // Ensure only one image field is used
+        if ($request->filled('image_path') && $request->hasFile('file_path')) {
+            return redirect()->back()->withErrors(['error' => 'กรุณาใช้เพียงวิธีเดียวในการเพิ่มรูปภาพ (ลิงก์ หรือ แนบไฟล์)'])->withInput();
+        }
+
+        $data = $request->except('file_path');
+
+        // Handle file upload if present
+        if ($request->hasFile('file_path')) {
+            // Delete old file if exists
+            if ($student_work->file_path) {
+                \Storage::disk('public')->delete($student_work->file_path);
+            }
+            
+            $file = $request->file('file_path');
+            $path = $file->store('student-works/images', 'public');
+            $data['file_path'] = $path;
+            // Clear image_path if file is uploaded
+            if (isset($data['image_path'])) {
+                unset($data['image_path']);
+            }
+        }
+
+        $student_work->update($data);
 
         return redirect()->route('admin.student-works.index')->with('success', 'แก้ไขข้อมูลผลงานนักศึกษาเรียบร้อยแล้ว');
     }

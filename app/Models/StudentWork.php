@@ -18,7 +18,8 @@ class StudentWork extends Model
         'title_en',
         'description_th',
         'description_en',
-        'image_path'
+        'image_path',
+        'file_path'
     ];
     
     public function program()

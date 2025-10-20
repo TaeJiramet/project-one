@@ -17,7 +17,8 @@ class Activity extends Model
         'title_th',
         'description_th',
         'activity_date',
-        'image_path'
+        'image_path',
+        'file_path'
     ];
     
     public function program()

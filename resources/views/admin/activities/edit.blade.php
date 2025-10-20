@@ -5,7 +5,7 @@
 @section('content')
 <h2>แก้ไขข้อมูลกิจกรรมเด่น</h2>
 
-<form method="POST" action="{{ route('admin.activities.update', $activity->activity_id) }}">
+<form method="POST" action="{{ route('admin.activities.update', $activity->activity_id) }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     <div class="row">
@@ -47,6 +47,22 @@
             <div class="mb-3">
                 <label for="image_path" class="form-label">ลิงก์รูปภาพ</label>
                 <input type="url" name="image_path" id="image_path" value="{{ old('image_path', $activity->image_path) }}" class="form-control">
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="file_path" class="form-label">ไฟล์แนบ</label>
+                <input type="file" name="file_path" id="file_path" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.jpg,.jpeg,.png">
+                <small class="form-text text-muted">อนุญาตเฉพาะไฟล์ .pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .zip, .rar, .jpg, .jpeg, .png (สูงสุด 10MB)</small>
+                @if($activity->file_path)
+                    <div class="mt-2">
+                        <label class="form-label">ไฟล์แนบปัจจุบัน:</label>
+                        <a href="{{ asset('storage/'.$activity->file_path) }}" target="_blank" class="d-block">{{ basename($activity->file_path) }}</a>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

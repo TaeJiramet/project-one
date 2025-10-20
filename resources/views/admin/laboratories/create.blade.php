@@ -5,7 +5,7 @@
 @section('content')
 <h2>เพิ่มห้องปฏิบัติการ</h2>
 
-<form method="POST" action="{{ route('admin.laboratories.store') }}">
+<form method="POST" action="{{ route('admin.laboratories.store') }}" enctype="multipart/form-data">
     @csrf
     <div class="row">
         <div class="col-md-6">
@@ -55,6 +55,13 @@
             <div class="mb-3">
                 <label for="image_path" class="form-label">ลิงก์รูปภาพ</label>
                 <input type="url" name="image_path" id="image_path" value="{{ old('image_path') }}" class="form-control">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="file_path" class="form-label">อัปโหลดรูปภาพ</label>
+                <input type="file" name="file_path" id="file_path" class="form-control" accept="image/*">
+                <small class="form-text text-muted">อัปโหลดไฟล์รูปภาพ (jpg, jpeg, png, gif, webp) สูงสุด 10MB</small>
             </div>
         </div>
     </div>

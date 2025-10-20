@@ -21,6 +21,7 @@ class FacultyMember extends Model
         'email',
         'phone',
         'image_path',
+        'file_path',
         'biography_th',
         'biography_en'
     ];

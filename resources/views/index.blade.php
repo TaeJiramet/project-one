@@ -367,6 +367,8 @@
                         <div style="margin-bottom: 15px;">
                             @if($member->image_path)
                                 <img src="{{ asset($member->image_path) }}" alt="{{ $member->name_th }}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #6c5ce7; cursor: pointer;" class="faculty-image-clickable">
+                            @elseif($member->file_path)
+                                <img src="{{ asset('storage/'.$member->file_path) }}" alt="{{ $member->name_th }}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #6c5ce7; cursor: pointer;" class="faculty-image-clickable">
                             @else
                                 <div style="width: 120px; height: 120px; border-radius: 50%; background: #6c5ce7; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
                                     {{ mb_substr($member->name_th, 0, 1, 'UTF-8') }}
@@ -405,8 +407,31 @@
                             <div style="margin-bottom: 15px; overflow: hidden; border-radius: 8px; display: flex; justify-content: center; align-items: center;">
                                 <img src="{{ $activity->image_path }}" alt="{{ $activity->title_th }}" style="width: 100%; height: 180px; object-fit: cover; cursor: pointer;" class="activity-image-clickable">
                             </div>
+                        @elseif($activity->file_path)
+                            @php
+                                $fileExtension = strtolower(pathinfo($activity->file_path, PATHINFO_EXTENSION));
+                                $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                                $isImage = in_array($fileExtension, $imageExtensions);
+                            @endphp
+                            @if($isImage)
+                                <div style="margin-bottom: 15px; overflow: hidden; border-radius: 8px; display: flex; justify-content: center; align-items: center;">
+                                    <img src="{{ asset('storage/'.$activity->file_path) }}" alt="{{ $activity->title_th }}" style="width: 100%; height: 180px; object-fit: cover; cursor: pointer;" class="activity-image-clickable">
+                                </div>
+                            @endif
                         @endif
                         <h3 class="info-title">{{ $activity->title_th }}</h3>
+                        @if($activity->file_path)
+                            @php
+                                $fileExtension = strtolower(pathinfo($activity->file_path, PATHINFO_EXTENSION));
+                                $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                                $isNotImage = !in_array($fileExtension, $imageExtensions);
+                            @endphp
+                            @if($isNotImage)
+                                <div style="margin-top: 10px;">
+                                    <a href="{{ asset('storage/'.$activity->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary" style="font-size: 0.8rem;">ดาวน์โหลดไฟล์แนบ</a>
+                                </div>
+                            @endif
+                        @endif
                     </div>
                 </div>
             @empty
@@ -456,6 +481,10 @@
                             <div style="margin-bottom: 15px; overflow: hidden; border-radius: 8px; display: flex; justify-content: center; align-items: center;">
                                 <img src="{{ $lab->image_path }}" alt="{{ $lab->name_th }}" style="width: 100%; height: 180px; object-fit: cover; cursor: pointer;" class="laboratory-image-clickable">
                             </div>
+                        @elseif($lab->file_path)
+                            <div style="margin-bottom: 15px; overflow: hidden; border-radius: 8px; display: flex; justify-content: center; align-items: center;">
+                                <img src="{{ asset('storage/'.$lab->file_path) }}" alt="{{ $lab->name_th }}" style="width: 100%; height: 180px; object-fit: cover; cursor: pointer;" class="laboratory-image-clickable">
+                            </div>
                         @endif
                         <h3 class="info-title">{{ $lab->name_th }}</h3>
                     </div>
@@ -483,6 +512,10 @@
                         @if($work->image_path)
                             <div style="margin-bottom: 15px; overflow: hidden; border-radius: 8px; display: flex; justify-content: center; align-items: center;">
                                 <img src="{{ $work->image_path }}" alt="{{ $work->title_th }}" style="width: 100%; height: 180px; object-fit: cover; cursor: pointer;" class="studentwork-image-clickable">
+                            </div>
+                        @elseif($work->file_path)
+                            <div style="margin-bottom: 15px; overflow: hidden; border-radius: 8px; display: flex; justify-content: center; align-items: center;">
+                                <img src="{{ asset('storage/'.$work->file_path) }}" alt="{{ $work->title_th }}" style="width: 100%; height: 180px; object-fit: cover; cursor: pointer;" class="studentwork-image-clickable">
                             </div>
                         @endif
                         <h3 class="info-title">{{ $work->title_th }}</h3>

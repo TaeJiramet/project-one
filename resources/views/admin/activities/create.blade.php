@@ -5,7 +5,7 @@
 @section('content')
 <h2>เพิ่มกิจกรรมเด่น</h2>
 
-<form method="POST" action="{{ route('admin.activities.store') }}">
+<form method="POST" action="{{ route('admin.activities.store') }}" enctype="multipart/form-data">
     @csrf
     <div class="row">
         <div class="col-md-6">
@@ -46,6 +46,16 @@
             <div class="mb-3">
                 <label for="image_path" class="form-label">ลิงก์รูปภาพ</label>
                 <input type="url" name="image_path" id="image_path" value="{{ old('image_path') }}" class="form-control">
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="file_path" class="form-label">ไฟล์แนบ</label>
+                <input type="file" name="file_path" id="file_path" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.jpg,.jpeg,.png">
+                <small class="form-text text-muted">อนุญาตเฉพาะไฟล์ .pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .zip, .rar, .jpg, .jpeg, .png (สูงสุด 10MB)</small>
             </div>
         </div>
     </div>

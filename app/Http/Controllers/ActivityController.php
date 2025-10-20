@@ -36,10 +36,29 @@ class ActivityController extends Controller
             'title_th' => 'required|string|max:255',
             'description_th' => 'nullable|string',
             'activity_date' => 'required|date',
-            'image_path' => 'nullable|url',
+            'image_path' => 'nullable|url|exclude_if:file_path,""',
+            'file_path' => 'nullable|file|max:10240', // Max 10MB
         ]);
 
-        Activity::create($request->all());
+        // Ensure only one image field is used
+        if ($request->filled('image_path') && $request->hasFile('file_path')) {
+            return redirect()->back()->withErrors(['error' => 'กรุณาใช้เพียงวิธีเดียวในการเพิ่มรูปภาพ (ลิงก์ หรือ แนบไฟล์)'])->withInput();
+        }
+
+        $data = $request->except('file_path');
+
+        // Handle file upload if present
+        if ($request->hasFile('file_path')) {
+            $file = $request->file('file_path');
+            $path = $file->store('activities/files', 'public');
+            $data['file_path'] = $path;
+            // Clear image_path if file is uploaded
+            if (isset($data['image_path'])) {
+                unset($data['image_path']);
+            }
+        }
+
+        Activity::create($data);
 
         return redirect()->route('admin.activities.index')->with('success', 'เพิ่มกิจกรรมเรียบร้อยแล้ว');
     }
@@ -71,10 +90,34 @@ class ActivityController extends Controller
             'title_th' => 'required|string|max:255',
             'description_th' => 'nullable|string',
             'activity_date' => 'required|date',
-            'image_path' => 'nullable|url',
+            'image_path' => 'nullable|url|exclude_if:file_path,""',
+            'file_path' => 'nullable|file|max:10240', // Max 10MB
         ]);
 
-        $activity->update($request->all());
+        // Ensure only one image field is used
+        if ($request->filled('image_path') && $request->hasFile('file_path')) {
+            return redirect()->back()->withErrors(['error' => 'กรุณาใช้เพียงวิธีเดียวในการเพิ่มรูปภาพ (ลิงก์ หรือ แนบไฟล์)'])->withInput();
+        }
+
+        $data = $request->except('file_path');
+
+        // Handle file upload if present
+        if ($request->hasFile('file_path')) {
+            // Delete old file if exists
+            if ($activity->file_path) {
+                \Storage::disk('public')->delete($activity->file_path);
+            }
+            
+            $file = $request->file('file_path');
+            $path = $file->store('activities/files', 'public');
+            $data['file_path'] = $path;
+            // Clear image_path if file is uploaded
+            if (isset($data['image_path'])) {
+                unset($data['image_path']);
+            }
+        }
+
+        $activity->update($data);
 
         return redirect()->route('admin.activities.index')->with('success', 'แก้ไขข้อมูลกิจกรรมเรียบร้อยแล้ว');
     }

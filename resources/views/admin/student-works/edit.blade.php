@@ -5,7 +5,7 @@
 @section('content')
 <h2>แก้ไขข้อมูลผลงานนักศึกษา</h2>
 
-<form method="POST" action="{{ route('admin.student-works.update', $studentWork->work_id) }}">
+<form method="POST" action="{{ route('admin.student-works.update', $studentWork->work_id) }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     <div class="row">
@@ -56,6 +56,21 @@
             <div class="mb-3">
                 <label for="image_path" class="form-label">ลิงก์รูปภาพ</label>
                 <input type="url" name="image_path" id="image_path" value="{{ old('image_path', $studentWork->image_path) }}" class="form-control">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="file_path" class="form-label">อัปโหลดรูปภาพ</label>
+                <input type="file" name="file_path" id="file_path" class="form-control" accept="image/*">
+                <small class="form-text text-muted">อัปโหลดไฟล์รูปภาพ (jpg, jpeg, png, gif, webp) สูงสุด 10MB</small>
+                @if($studentWork->file_path)
+                    <div class="mt-2">
+                        <label class="form-label">รูปภาพปัจจุบัน:</label>
+                        <div>
+                            <img src="{{ asset('storage/'.$studentWork->file_path) }}" alt="Current image" style="max-width: 100px; max-height: 100px; border-radius: 8px; object-fit: cover;">
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
